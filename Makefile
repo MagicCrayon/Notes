@@ -4,4 +4,4 @@ clean:
 	rm main
 cleanall:
 	rm main
-	rm Notes.dat
+	rm .notes.dat
