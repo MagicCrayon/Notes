@@ -7,20 +7,23 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <errno.h>
 #include "notes.h"
 
 /*
  *  TODO
  *  - Add errno things
+ *  - Add Proper Error Messages
  *  - Clear All Notes Function
- *  - [BUG] Segment Dump When "./main -l" and .notes.dat not exist 
+ *  - [BUG] Segment Dump When "./main -l" and .notes.dat not exist
+ *      - Add Check for file existance
  */
 
 int main(int argc, char* argv[])
 {
     
     int lflag, aflag, dflag, hflag = 0;             /* Flags For getopt                 */
-    int c;                                          /* Temp For getopt                  */
+    int c;                                          /*  Arg temp getopt                 */
     char note[256] = {0};                           /* Buffer Where Note Is Stored      */
     int fd;                                         /* File Descripter                  */
     const char *filename = ".notes.dat";            /* Where Notes Will Be Stored       */
@@ -34,10 +37,13 @@ int main(int argc, char* argv[])
      */
     if (argc != 2)
     {
-        printf("[*]Invalid Option\n"); // TODO Fix that message
+        printf("Usage: %s <argument>\n", argv[0]);
         exit(1);
     }
 
+    /*
+     * Handle Parameters
+     */
     while ((c = getopt (argc, argv, "ladh")) != -1)
     {
         switch(c)
@@ -55,7 +61,9 @@ int main(int argc, char* argv[])
                 hflag = 1;
                 break;
             default:
-                exit(-1);
+                printf("%s: invalid option - '%c'\n", argv[0], c);
+                printf("Try '%s -h' for more information.\n", argv[0]);
+                exit(1);
         }
     }
 
@@ -109,9 +117,9 @@ int main(int argc, char* argv[])
     if (dflag == 1)
     {
         printf("Which Note? ");
-	scanf("%d", &LineToDelete); // TODO Change to fgets later for secuirty reasons 
+	    scanf("%d", &LineToDelete); // TODO Change to fgets later for secuirty reasons 
 	
-	delete(LineToDelete, filename);
+    	delete(LineToDelete, filename);
         
         exit(1);
     }
@@ -128,10 +136,9 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-// TODO Create Better Help
 void usage()
 {
-    printf("./main [arg]\n");
+    printf("./main [argument]\n");
     printf("-l  -   List Notes\n");
     printf("-a  -   Add Notes\n" );
     printf("-d  -   Delete Notes\n");
@@ -146,11 +153,19 @@ int delete(int deleteLine, const char *file)
   int LineToDelete = deleteLine;
   int ch;
   
-  File1 = fopen(file, "r");
+  if ( (File1 = fopen(file, "r")) == NULL)
+  {
+      printf("Error Opening file");
+      exit(-1);
+  }
   
   rewind(File1);
   
-  File2 = fopen("replica.dat", "w");
+  if ( (File2 = fopen("replica.dat", "w")) == NULL)
+  {
+    printf("Error Opening replica\n");
+    exit(-1);
+  }
   
   while (EOF != (ch = getc(File1))) 
   {
