@@ -13,6 +13,7 @@
  *  TODO
  *  - Add errno things
  *  - Clear All Notes Function
+ *  - [BUG] Segment Dump When "./main -l" and .notes.dat not exist 
  */
 
 int main(int argc, char* argv[])
@@ -71,7 +72,7 @@ int main(int argc, char* argv[])
             printf("Error in notes.dat");
         }
 
-        if ( write(fd, note, strlen(note)) != strlen(note) )
+        if ( write(fd, note, strlen(note)) != strlen(note) ) // TODO strlen to strnlen
         {
             printf("Write Error\n");
             exit(-1);
