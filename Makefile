@@ -1,5 +1,5 @@
 all:
-	    gcc -ggdb main.c -o main
+	    gcc -Wall -ggdb main.c -o main
 clean:
 	rm main
 cleanall:

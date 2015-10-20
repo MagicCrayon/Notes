@@ -17,17 +17,17 @@
  *  - Clear All Notes Function
  *  - [BUG] Segment Dump When "./main -l" and .notes.dat not exist
  *      - Add Check for file existance
+ *  - Maybe change '-a' to accept string in argument
  */
 
 int main(int argc, char* argv[])
 {
     
-    int lflag, aflag, dflag, hflag = 0;             /* Flags For getopt                 */
+    int lflag, aflag, dflag, cflag, hflag = 0;      /* Flags For getopt                 */
     int c;                                          /*  Arg temp getopt                 */
     char note[256] = {0};                           /* Buffer Where Note Is Stored      */
     int fd;                                         /* File Descripter                  */
     const char *filename = ".notes.dat";            /* Where Notes Will Be Stored       */
-    char *line = NULL;                              /* Single Line Buffer               */
     int LineToDelete;                               /* Which Line To Delete             */
 
     opterr = 0;
@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
     /*
      * Handle Parameters
      */
-    while ((c = getopt (argc, argv, "ladh")) != -1)
+    while ((c = getopt (argc, argv, "ladch")) != -1)
     {
         switch(c)
         {
@@ -56,6 +56,9 @@ int main(int argc, char* argv[])
                 break;
             case 'd':
                 dflag = 1;
+                break;
+            case 'c':
+                cflag = 1;
                 break;
             case 'h':
                 hflag = 1;
@@ -74,7 +77,7 @@ int main(int argc, char* argv[])
     {
         fgets(note, sizeof(note), stdin);
         
-        int fd = open(filename, O_RDWR | O_APPEND | O_CREAT, 0644); // TODO Replace that with fopen
+        fd = open(filename, O_RDWR | O_APPEND | O_CREAT, 0644); // TODO Replace that with fopen
         if (fd == -1)
         {
             printf("Error in notes.dat");
@@ -95,8 +98,7 @@ int main(int argc, char* argv[])
      */
     if (lflag == 1)
     {   
-        char line[81], descrip[10];
-        float price;
+        char line[81];
         FILE *inFile;
 
         inFile = fopen(filename, "r");
@@ -125,6 +127,12 @@ int main(int argc, char* argv[])
     }
 
     /*
+     * Clear Notes
+     */
+    if (cflag == 1)
+        clear(filename);
+
+    /*
      * Help
      */
     if (hflag == 1)
@@ -138,11 +146,12 @@ int main(int argc, char* argv[])
 
 void usage()
 {
-    printf("./main [argument]\n");
-    printf("-l  -   List Notes\n");
-    printf("-a  -   Add Notes\n" );
+    printf("./main [argument]\n"   ); // TODO add argv[0]
+    printf("-l  -   List Notes\n"  );
+    printf("-h  -   Show Help\n"   );
+    printf("-a  -   Add Notes\n"   );
     printf("-d  -   Delete Notes\n");
-    printf("-h  -   View Help\n" );
+    printf("-c  -   Clear Notes\n ");
 }
 
 int delete(int deleteLine, const char *file) 
@@ -181,17 +190,16 @@ int delete(int deleteLine, const char *file)
   
   rename("replica.dat", file);
   
-  File1 = fopen(file, "r");
-  
-  ch = getc(File1);
-  while (ch != EOF)
-  {
-    printf("%c", ch);
-    ch = getc(File1);
-  }
-  
-  fclose(File1);
-  
   return 0;
 }
 
+int clear(const char *file)
+{
+    if ((remove(file)) == -1)
+    {
+        fprintf(stderr, "Clearing Failed\n"); // TODO proper error msg
+        exit(-1);
+    }
+
+    return 0;
+}
