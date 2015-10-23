@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <errno.h>
+#include <ctype.h>
 #include "notes.h"
 
 /*
@@ -18,6 +19,7 @@
  *  - [BUG] Segment Dump When "./main -l" and .notes.dat not exist
  *      - Add Check for file existance
  *  - Maybe change '-a' to accept string in argument
+ *  - Check to see if delete note number not out of bounds
  */
 
 int main(int argc, char* argv[])
@@ -35,7 +37,7 @@ int main(int argc, char* argv[])
     /*
      * Check For Correct Arguments
      */
-    if (argc != 2)
+    if ( (argc > 3) || (argc == 1) )
     {
         printf("Usage: %s <argument>\n", argv[0]);
         exit(1);
@@ -44,7 +46,7 @@ int main(int argc, char* argv[])
     /*
      * Handle Parameters
      */
-    while ((c = getopt (argc, argv, "ladch")) != -1)
+    while ((c = getopt (argc, argv, "lachd:")) != -1)
     {
         switch(c)
         {
@@ -56,6 +58,7 @@ int main(int argc, char* argv[])
                 break;
             case 'd':
                 dflag = 1;
+                LineToDelete =  atoi(optarg);
                 break;
             case 'c':
                 cflag = 1;
@@ -63,10 +66,15 @@ int main(int argc, char* argv[])
             case 'h':
                 hflag = 1;
                 break;
+            case '?':
+                if (optopt == 'd')
+                    fprintf(stderr, "Option -%c requires an argument. \n", optopt);
+                else if (isprint (optopt))
+                    fprintf(stderr, "Unknown option '-c%c'.\n", optopt);
+                else
+                    fprintf(stderr, "Unknown option character '\\x%x'.\n", optopt);
             default:
-                printf("%s: invalid option - '%c'\n", argv[0], c);
-                printf("Try '%s -h' for more information.\n", argv[0]);
-                exit(1);
+                exit(-11);
         }
     }
 
@@ -118,9 +126,6 @@ int main(int argc, char* argv[])
      */
     if (dflag == 1)
     {
-        printf("Which Note? ");
-	    scanf("%d", &LineToDelete); // TODO Change to fgets later for secuirty reasons 
-	
     	delete(LineToDelete, filename);
         
         exit(1);
