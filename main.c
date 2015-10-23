@@ -16,7 +16,6 @@
  *  TODO
  *  - Add errno things
  *  - Add Proper Error Messages
- *  - Clear All Notes Function
  *  - [BUG] Segment Dump When "./main -l" and .notes.dat not exist
  *      - Add Check for file existance
  *  - Maybe change '-a' to accept string in argument
