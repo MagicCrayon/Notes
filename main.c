@@ -161,16 +161,16 @@ int main(int argc, char* argv[])
      */
     if (hflag == 1)
     {
-        usage();
+        usage(argv[0]);
         exit(1);
     }
 
     return 0;
 }
 
-void usage()
+void usage(char *name)
 {
-    printf("./main [argument]\n"   ); // TODO add argv[0]
+    printf("%s [argument]\n",name);
     printf("-l  -   List Notes\n"  );
     printf("-h  -   Show Help\n"   );
     printf("-a  -   Add Notes\n"   );

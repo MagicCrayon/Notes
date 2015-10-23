@@ -4,8 +4,8 @@
 /*
  * Function ProtoTypes
  */
-void usage();                      /* Print Program Usage */
+void usage(char *);            /* Print Program Usage */
 int delete(int, const char *);     /* Delete Specfic Note */
-int clear(const char *);                       /* Clear All Notes     */
+int clear(const char *);           /* Clear All Notes     */
 
 #endif
