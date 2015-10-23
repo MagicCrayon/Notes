@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <errno.h>
 #include <ctype.h>
+#include <unistd.h>
 #include "notes.h"
 
 /*
@@ -109,7 +110,25 @@ int main(int argc, char* argv[])
         char line[81];
         FILE *inFile;
 
+        /*
+         * Check If File Exists
+         */
+        if( access( filename, F_OK ) != -1 )
+        {
+            NULL;
+        }
+        else
+        {
+            fprintf(stderr, "Error: File Does Not Exist\n");
+            exit(-1);
+        }
+
         inFile = fopen(filename, "r");
+        if (inFile == NULL)
+        {
+            fprintf(stderr, "Opening ListNoteFile Failed\n");
+            exit(-1);
+        }
 
         while (fgets(line, 81, inFile) != NULL)
         {
