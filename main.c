@@ -12,12 +12,6 @@
 #include <unistd.h>
 #include "notes.h"
 
-/*
- *  TODO
- *  - Maybe change '-a' to accept string in argument
- *  - Check to see if delete note number not out of bounds
- */
-
 int main(int argc, char* argv[])
 {
     
