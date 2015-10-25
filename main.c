@@ -14,14 +14,6 @@
 
 /*
  *  TODO
-<<<<<<< HEAD
- *  - Add errno things
- *  - Add Proper Error Messages
- *  - Clear All Notes Function
- *  - [BUG] Segment Dump When "./main -l" and .notes.dat not exist
- *      - Add Check for file existance
-=======
->>>>>>> 37d7dea... Replaced printf error messages with errno
  *  - Maybe change '-a' to accept string in argument
  *  - Check to see if delete note number not out of bounds
  */
