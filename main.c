@@ -14,10 +14,6 @@
 
 /*
  *  TODO
- *  - Add errno things
- *  - Add Proper Error Messages
- *  - [BUG] Segment Dump When "./main -l" and .notes.dat not exist
- *      - Add Check for file existance
  *  - Maybe change '-a' to accept string in argument
  *  - Check to see if delete note number not out of bounds
  */
@@ -31,6 +27,7 @@ int main(int argc, char* argv[])
     int fd;                                         /* File Descripter                  */
     const char *filename = ".notes.dat";            /* Where Notes Will Be Stored       */
     int LineToDelete;                               /* Which Line To Delete             */
+    extern int errno;
 
     opterr = 0;
 
@@ -74,7 +71,7 @@ int main(int argc, char* argv[])
                 else
                     fprintf(stderr, "Unknown option character '\\x%x'.\n", optopt);
             default:
-                exit(-11);
+                exit(-1);
         }
     }
 
@@ -88,12 +85,13 @@ int main(int argc, char* argv[])
         fd = open(filename, O_RDWR | O_APPEND | O_CREAT, 0644); // TODO Replace that with fopen
         if (fd == -1)
         {
-            printf("Error in notes.dat");
+            perror("Error");
+            exit(-1);
         }
 
         if ( write(fd, note, strlen(note)) != strlen(note) ) // TODO strlen to strnlen
         {
-            printf("Write Error\n");
+            perror("Error");
             exit(-1);
         }
 
@@ -118,14 +116,14 @@ int main(int argc, char* argv[])
         }
         else
         {
-            fprintf(stderr, "Error: File Does Not Exist\n");
+            fprintf(stderr, "Error: Notes file does not exist\n");
             exit(-1);
         }
 
         inFile = fopen(filename, "r");
         if (inFile == NULL)
         {
-            fprintf(stderr, "Opening ListNoteFile Failed\n");
+            perror("Error");    
             exit(-1);
         }
 
@@ -187,7 +185,7 @@ int delete(int deleteLine, const char *file)
   
   if ( (File1 = fopen(file, "r")) == NULL)
   {
-      printf("Error Opening file");
+      perror("Error");
       exit(-1);
   }
   
@@ -195,7 +193,7 @@ int delete(int deleteLine, const char *file)
   
   if ( (File2 = fopen("replica.dat", "w")) == NULL)
   {
-    printf("Error Opening replica\n");
+    perror("Error replica");
     exit(-1);
   }
   
@@ -211,7 +209,7 @@ int delete(int deleteLine, const char *file)
   fclose(File2);
   remove(file);
   
-  rename("replica.dat", file);
+  rename("replica.dat", file); // TODO Add error msg later
   
   return 0;
 }
@@ -221,6 +219,7 @@ int clear(const char *file)
     if ((remove(file)) == -1)
     {
         fprintf(stderr, "Clearing Failed\n"); // TODO proper error msg
+        perror("Error");
         exit(-1);
     }
 
